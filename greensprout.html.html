@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GreenSprout — Fresh Microgreens</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g50:#eaf3de;--g100:#c0dd97;--g200:#97c459;--g400:#639922;--g600:#3b6d11;--g800:#27500a;--g900:#173404;
+  --t50:#e1f5ee;--t100:#9fe1cb;--t600:#0f6e56;--t800:#085041;
+  --a50:#faeeda;--a100:#fac775;--a600:#854f0b;--a800:#633806;
+  --r50:#fcebeb;--r100:#f7c1c1;--r600:#a32d2d;
+  --bg:#f5f4f0;--surface:#fff;--surface2:#f7f7f5;
+  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.18);
+  --text:#1a1a18;--text2:#6b6b67;--text3:#a0a09c;
+  --font-display:'DM Serif Display',serif;
+  --font-body:'DM Sans',sans-serif;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#0e0e0c;--surface:#1a1a18;--surface2:#242422;
+  --border:rgba(255,255,255,0.1);--border2:rgba(255,255,255,0.18);
+  --text:#f0f0ec;--text2:#9a9a96;--text3:#6a6a66;
+  --g50:#1a2e0a;--g100:#2a4a12;--g200:#3b6d11;--g600:#97c459;--g800:#c0dd97;--g900:#eaf3de;
+}}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh}
+.shell{display:flex;flex-direction:column;min-height:100vh;max-width:960px;margin:0 auto;background:var(--surface);box-shadow:0 0 0 0.5px var(--border)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;border-bottom:0.5px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:100}
+.brand{font-family:var(--font-display);font-size:20px;color:var(--g600);display:flex;align-items:center;gap:8px;letter-spacing:-0.02em;cursor:pointer}
+.brand em{font-style:italic;color:var(--g400)}
+.nav-right{display:flex;align-items:center;gap:8px}
+.nav-btn{padding:6px 12px;border-radius:20px;border:0.5px solid var(--border);background:transparent;font-family:var(--font-body);font-size:12px;cursor:pointer;color:var(--text2);transition:all .15s}
+.nav-btn:hover,.nav-btn.active{background:var(--g50);color:var(--g800);border-color:var(--g100)}
+.nav-btn.cta{background:var(--g600);color:#fff;border-color:var(--g600)}
+.nav-btn.cta:hover{background:var(--g800)}
+.cart-pill{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;border:0.5px solid var(--border);font-size:12px;cursor:pointer;background:transparent;color:var(--text2);transition:all .15s}
+.cart-pill:hover{background:var(--g50);color:var(--g800);border-color:var(--g100)}
+.cart-count{background:var(--g600);color:#fff;border-radius:99px;font-size:10px;padding:1px 5px;font-weight:600}
+.page{display:none;animation:fadeIn .2s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.hero{padding:36px 24px 28px;background:var(--g50);border-bottom:0.5px solid var(--g100)}
+.hero-tag{font-size:11px;letter-spacing:.1em;color:var(--g600);font-weight:500;margin-bottom:8px}
+.hero-title{font-family:var(--font-display);font-size:32px;color:var(--g900);line-height:1.15;margin-bottom:8px}
+.hero-title em{font-style:italic;color:var(--g600)}
+.hero-sub{font-size:14px;color:var(--g800);opacity:.75;margin-bottom:20px}
+.hero-stats{display:flex;gap:24px}
+.hstat-n{font-family:var(--font-display);font-size:22px;color:var(--g600)}
+.hstat-l{font-size:11px;color:var(--g800);opacity:.7}
+.filter-strip{display:flex;gap:6px;padding:12px 20px;overflow-x:auto;border-bottom:0.5px solid var(--border)}
+.filter-strip::-webkit-scrollbar{display:none}
+.filter-chip{padding:5px 14px;border-radius:20px;border:0.5px solid var(--border);font-size:12px;cursor:pointer;white-space:nowrap;background:transparent;color:var(--text2);transition:all .15s;font-family:var(--font-body)}
+.filter-chip.active{background:var(--g600);color:#fff;border-color:var(--g600)}
+.products-section{padding:20px}
+.section-label{font-size:11px;letter-spacing:.08em;color:var(--text2);margin-bottom:14px;font-weight:500}
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.pcard{background:var(--surface);border:0.5px solid var(--border);border-radius:16px;overflow:hidden;transition:all .2s}
+.pcard:hover{border-color:var(--g200);transform:translateY(-2px)}
+.pcard-top{padding:18px 16px 12px;background:var(--g50)}
+.pcard-icon{font-size:32px;margin-bottom:6px}
+.pcard-badges{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.chip{font-size:10px;padding:2px 7px;border-radius:99px;font-weight:500}
+.chip-org{background:var(--g100);color:var(--g900)}
+.chip-new{background:var(--t100);color:var(--t800)}
+.chip-pop{background:var(--a100);color:var(--a800)}
+.chip-low{background:var(--r100);color:var(--r600)}
+.pcard-name{font-family:var(--font-display);font-size:17px;color:var(--g900)}
+.pcard-body{padding:12px 16px}
+.pcard-desc{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:10px}
+.pcard-foot{display:flex;align-items:center;justify-content:space-between}
+.pcard-price{font-size:16px;font-weight:600;color:var(--g800)}
+.pcard-unit{font-size:10px;color:var(--text3)}
+.add-btn{width:30px;height:30px;border-radius:50%;border:none;background:var(--g600);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.add-btn:hover{background:var(--g800);transform:scale(1.1)}
+.add-btn.added{background:var(--g200)}
+.cart-page{padding:20px}
+.cart-empty{text-align:center;padding:60px 20px;color:var(--text2)}
+.cart-empty-icon{font-size:48px;margin-bottom:12px;opacity:.5}
+.cart-items{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.citem{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface2);border-radius:12px;border:0.5px solid var(--border)}
+.citem-icon{font-size:24px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:var(--g50);border-radius:10px}
+.citem-info{flex:1}
+.citem-name{font-size:14px;font-weight:500}
+.citem-price{font-size:12px;color:var(--text2)}
+.qty-row{display:flex;align-items:center;gap:8px}
+.qbtn{width:26px;height:26px;border-radius:50%;border:0.5px solid var(--border2);background:transparent;cursor:pointer;font-size:14px;color:var(--text);display:flex;align-items:center;justify-content:center}
+.qnum{font-size:14px;font-weight:500;min-width:18px;text-align:center}
+.cart-summary{background:var(--g50);border-radius:14px;padding:16px;margin-bottom:16px;border:0.5px solid var(--g100)}
+.sum-row{display:flex;justify-content:space-between;font-size:13px;color:var(--g800);padding:3px 0}
+.sum-row.total{font-size:16px;font-weight:600;color:var(--g900);border-top:0.5px solid var(--g200);margin-top:8px;padding-top:10px}
+.toggle-row{display:flex;gap:8px;margin-bottom:14px}
+.toggle-btn{flex:1;padding:9px;border-radius:10px;border:0.5px solid var(--border);background:transparent;font-size:13px;cursor:pointer;font-family:var(--font-body);color:var(--text2);transition:all .15s}
+.toggle-btn.on{background:var(--g600);color:#fff;border-color:var(--g600)}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:11px;color:var(--text2);margin-bottom:4px;letter-spacing:.03em}
+.field input,.field select,.field textarea{width:100%;padding:9px 12px;border-radius:10px;border:0.5px solid var(--border);background:var(--surface);font-family:var(--font-body);font-size:13px;color:var(--text)}
+.field input:focus,.field select:focus{outline:none;border-color:var(--g400)}
+.btn-primary{width:100%;padding:12px;border-radius:12px;border:none;background:var(--g600);color:#fff;font-family:var(--font-display);font-size:16px;cursor:pointer;transition:all .15s}
+.btn-primary:hover{background:var(--g800)}
+.btn-sec{width:100%;padding:10px;border-radius:12px;border:0.5px solid var(--border2);background:transparent;font-family:var(--font-body);font-size:13px;cursor:pointer;color:var(--text);margin-top:8px;transition:all .15s}
+.btn-sec:hover{background:var(--surface2)}
+.success-banner{background:var(--g50);border:0.5px solid var(--g200);border-radius:14px;padding:24px;text-align:center;margin-bottom:16px}
+.success-icon{font-size:36px;margin-bottom:8px}
+.success-title{font-family:var(--font-display);font-size:20px;color:var(--g900);margin-bottom:4px}
+.success-sub{font-size:13px;color:var(--g600)}
+.auth-page{padding:40px 24px;max-width:400px;margin:0 auto}
+.auth-title{font-family:var(--font-display);font-size:26px;color:var(--g900);margin-bottom:4px}
+.auth-sub{font-size:13px;color:var(--text2);margin-bottom:24px}
+.auth-switch{font-size:13px;color:var(--text2);text-align:center;margin-top:16px}
+.auth-switch span{color:var(--g600);cursor:pointer;font-weight:500}
+.auth-error{background:var(--r50);color:var(--r600);border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:12px}
+.orders-page{padding:20px}
+.ocard{background:var(--surface2);border-radius:14px;padding:14px 16px;margin-bottom:10px;border:0.5px solid var(--border)}
+.ocard-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.ocard-id{font-size:13px;font-weight:500}
+.ocard-date{font-size:11px;color:var(--text2)}
+.ocard-items{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.5}
+.ocard-foot{display:flex;justify-content:space-between;align-items:center}
+.ocard-total{font-size:14px;font-weight:600;color:var(--g800)}
+.status-badge{font-size:10px;padding:3px 9px;border-radius:99px;font-weight:500}
+.s-new{background:var(--t50);color:var(--t800)}
+.s-ready{background:var(--a50);color:var(--a800)}
+.s-done{background:var(--g50);color:var(--g800)}
+.s-cancelled{background:var(--r50);color:var(--r600)}
+.admin-page{padding:20px}
+.admin-tabs{display:flex;gap:6px;margin-bottom:20px;padding-bottom:12px;border-bottom:0.5px solid var(--border)}
+.atab{padding:6px 14px;border-radius:20px;border:0.5px solid var(--border);font-size:12px;cursor:pointer;background:transparent;color:var(--text2);font-family:var(--font-body);transition:all .15s}
+.atab.active{background:var(--g900);color:var(--g50);border-color:var(--g900)}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.mcard{background:var(--surface2);border-radius:12px;padding:12px 14px}
+.mcard-l{font-size:11px;color:var(--text2);margin-bottom:6px}
+.mcard-v{font-family:var(--font-display);font-size:24px;color:var(--text)}
+.mcard-s{font-size:11px;color:var(--g600);margin-top:2px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;padding:8px 10px;font-size:11px;color:var(--text2);border-bottom:0.5px solid var(--border);font-weight:500;letter-spacing:.03em}
+.tbl td{padding:10px;border-bottom:0.5px solid var(--border);vertical-align:middle;color:var(--text)}
+.abtn{font-size:11px;padding:4px 10px;border-radius:8px;border:0.5px solid var(--border2);background:transparent;cursor:pointer;color:var(--text);font-family:var(--font-body);margin-right:4px;transition:all .15s}
+.abtn:hover{background:var(--surface2)}
+.abtn.danger{border-color:var(--r100);color:var(--r600)}
+.abtn.danger:hover{background:var(--r50)}
+.inv-form{background:var(--surface2);border-radius:14px;padding:16px;margin-bottom:16px;border:0.5px solid var(--border)}
+.inv-form-title{font-size:13px;font-weight:500;margin-bottom:12px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stock-low{color:#e24b4a;font-weight:500}
+.stock-ok{color:var(--g600)}
+.editable{padding:4px 8px;border-radius:6px;border:0.5px solid var(--border);font-size:13px;font-family:var(--font-body);width:80px;background:var(--surface);color:var(--text)}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--g50);border:0.5px solid var(--g100);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--g800);cursor:pointer}
+.profile-card{background:var(--surface2);border-radius:14px;padding:20px;margin-bottom:16px}
+.profile-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.profile-avatar{width:52px;height:52px;border-radius:50%;background:var(--g100);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--g900);font-weight:600}
+@media(max-width:600px){.metrics{grid-template-columns:1fr 1fr}.products-grid{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}.hero-title{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="shell">
+<nav class="nav">
+  <div class="brand" onclick="go('shop')">Green<em>Sprout</em></div>
+  <div class="nav-right" id="nav-right"></div>
+</nav>
+<div class="page active" id="page-shop"></div>
+<div class="page" id="page-cart"></div>
+<div class="page" id="page-orders"></div>
+<div class="page" id="page-auth"></div>
+<div class="page" id="page-admin"></div>
+</div>
+
+<script>
+let state={page:'shop',filter:'all',cart:{},orderType:'delivery',checkoutSuccess:false,authMode:'login',adminTab:'orders',user:null,newProduct:{name:'',icon:'🌿',desc:'',price:'',unit:'per 100g',badge:'organic',stock:''}};
+const USERS_KEY='gs_users',ORDERS_KEY='gs_orders',PRODUCTS_KEY='gs_products',ADMIN_PASS='admin123';
+const DEFAULT_PRODUCTS=[
+  {id:1,name:'Sunflower',icon:'🌻',desc:'Nutty & crunchy. Perfect for salads and grain bowls.',price:120,unit:'per 100g',badge:'popular',stock:45},
+  {id:2,name:'Radish',icon:'🌿',desc:'Peppery & vibrant. Adds a spicy kick to any dish.',price:90,unit:'per 100g',badge:'organic',stock:60},
+  {id:3,name:'Pea Shoots',icon:'🫛',desc:'Sweet & tender. Perfect for stir-fries and garnish.',price:110,unit:'per 100g',badge:'new',stock:8},
+  {id:4,name:'Basil',icon:'🌱',desc:'Aromatic Italian flavour. Pairs with pasta and pizza.',price:150,unit:'per 50g',badge:'organic',stock:30},
+  {id:5,name:'Broccoli',icon:'🥦',desc:'Rich in sulforaphane — one of the most nutritious.',price:130,unit:'per 100g',badge:'popular',stock:3},
+  {id:6,name:'Mustard',icon:'🍀',desc:'Bold & spicy. Excellent as garnish on curries.',price:80,unit:'per 100g',badge:'organic',stock:55},
+  {id:7,name:'Wheatgrass',icon:'🌾',desc:'Detox powerhouse. Great for smoothies and shots.',price:100,unit:'per 50g',badge:'new',stock:20},
+  {id:8,name:'Amaranth',icon:'🌺',desc:'Vibrant magenta. Visually stunning, mildly earthy.',price:140,unit:'per 100g',badge:'new',stock:15},
+];
+function loadProducts(){try{const s=localStorage.getItem(PRODUCTS_KEY);return s?JSON.parse(s):DEFAULT_PRODUCTS;}catch{return DEFAULT_PRODUCTS;}}
+function saveProducts(p){try{localStorage.setItem(PRODUCTS_KEY,JSON.stringify(p));}catch{}}
+function loadUsers(){try{const s=localStorage.getItem(USERS_KEY);return s?JSON.parse(s):{};}catch{return{};}}
+function saveUsers(u){try{localStorage.setItem(USERS_KEY,JSON.stringify(u));}catch{}}
+function loadOrders(){try{const s=localStorage.getItem(ORDERS_KEY);return s?JSON.parse(s):[];}catch{return[];}}
+function saveOrders(o){try{localStorage.setItem(ORDERS_KEY,JSON.stringify(o));}catch{}}
+let products=loadProducts(),users=loadUsers(),orders=loadOrders();
+let orderCounter=orders.length?Math.max(...orders.map(o=>parseInt(o.id.replace('#',''))||1000))+1:1001;
+
+function go(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  state.page=page;renderNav();
+  ({shop:renderShop,cart:renderCart,orders:renderOrders,auth:renderAuth,admin:renderAdmin})[page]?.();
+}
+function renderNav(){
+  const cc=Object.values(state.cart).reduce((a,b)=>a+b,0);
+  let h=`<button class="cart-pill" onclick="go('cart')">🛒 Cart <span class="cart-count">${cc}</span></button>`;
+  if(state.user){
+    if(state.user.isAdmin)h=`<button class="nav-btn ${state.page==='admin'?'active':''}" onclick="go('admin')">Admin</button>`+h;
+    h=`<button class="nav-btn ${state.page==='orders'?'active':''}" onclick="go('orders')">My orders</button>`+h;
+    const ini=state.user.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    h=`<div class="user-avatar" onclick="go('orders')" title="${state.user.name}">${ini}</div>`+h;
+    h=`<button class="nav-btn" onclick="logout()">Sign out</button>`+h;
+  } else {
+    h=`<button class="nav-btn cta" onclick="go('auth')">Sign in</button>`+h;
+  }
+  document.getElementById('nav-right').innerHTML=h;
+}
+function logout(){state.user=null;go('shop');}
+
+function renderShop(){
+  const cats=['all','organic','popular','new'],labels={all:'All greens',organic:'Organic',popular:'Popular',new:'New arrivals'};
+  const filtered=state.filter==='all'?products:products.filter(p=>p.badge===state.filter);
+  document.getElementById('page-shop').innerHTML=`
+    <div class="hero">
+      <div class="hero-tag">HYDERABAD'S FRESHEST MICROGREENS</div>
+      <div class="hero-title">Tiny greens,<br><em>massive nutrition</em></div>
+      <div class="hero-sub">Harvested fresh · Delivered to your door or ready for pickup</div>
+      <div class="hero-stats">
+        <div class="hstat"><div class="hstat-n">${products.length}</div><div class="hstat-l">Varieties</div></div>
+        <div class="hstat"><div class="hstat-n">24h</div><div class="hstat-l">Fresh harvest</div></div>
+        <div class="hstat"><div class="hstat-n">₹0</div><div class="hstat-l">Min order</div></div>
+      </div>
+    </div>
+    <div class="filter-strip">${cats.map(c=>`<button class="filter-chip ${state.filter===c?'active':''}" onclick="setFilter('${c}')">${labels[c]}</button>`).join('')}</div>
+    <div class="products-section">
+      <div class="section-label">${filtered.length} PRODUCTS</div>
+      <div class="products-grid">${filtered.map(p=>{
+        const bm={organic:'chip-org Organic',popular:'chip-pop Popular',new:'chip-new New'};
+        const bc=bm[p.badge]||'';const[bcls,btxt]=bc.split(' ');
+        return`<div class="pcard">
+          <div class="pcard-top"><div class="pcard-icon">${p.icon}</div>
+            <div class="pcard-badges">${btxt?`<span class="chip ${bcls}">${btxt}</span>`:''} ${p.stock<=5?'<span class="chip chip-low">Low stock</span>':''}</div>
+            <div class="pcard-name">${p.name}</div></div>
+          <div class="pcard-body"><div class="pcard-desc">${p.desc}</div>
+            <div class="pcard-foot"><div><div class="pcard-price">₹${p.price}</div><div class="pcard-unit">${p.unit}</div></div>
+              <button class="add-btn" id="addbtn-${p.id}" onclick="addToCart(${p.id})">+</button></div></div></div>`;
+      }).join('')}</div></div>`;
+}
+function setFilter(f){state.filter=f;renderShop();}
+function addToCart(id){
+  state.cart[id]=(state.cart[id]||0)+1;renderNav();
+  const btn=document.getElementById('addbtn-'+id);
+  if(btn){btn.textContent='✓';btn.classList.add('added');setTimeout(()=>{btn.textContent='+';btn.classList.remove('added');},700);}
+}
+
+function renderCart(){
+  const el=document.getElementById('page-cart');
+  if(state.checkoutSuccess){
+    el.innerHTML=`<div class="cart-page"><div class="success-banner"><div class="success-icon">🌱</div><div class="success-title">Order placed!</div><div class="success-sub">We'll get your greens ready shortly.</div></div><button class="btn-primary" onclick="state.checkoutSuccess=false;go('shop')">Continue shopping</button><button class="btn-sec" onclick="state.checkoutSuccess=false;go('orders')">View my orders</button></div>`;return;
+  }
+  const keys=Object.keys(state.cart).filter(k=>state.cart[k]>0);
+  if(!keys.length){el.innerHTML=`<div class="cart-page"><div class="cart-empty"><div class="cart-empty-icon">🛒</div><div style="font-size:15px;font-weight:500;margin-bottom:6px">Your cart is empty</div><button class="btn-primary" style="max-width:200px;margin:16px auto 0;display:block" onclick="go('shop')">Browse products</button></div></div>`;return;}
+  const sub=keys.reduce((s,k)=>{const p=products.find(x=>x.id==k);return s+(p?p.price*state.cart[k]:0);},0);
+  const del=state.orderType==='delivery'?40:0,total=sub+del;
+  el.innerHTML=`<div class="cart-page">
+    <div class="section-label" style="margin-bottom:12px">YOUR CART</div>
+    <div class="cart-items">${keys.map(k=>{const p=products.find(x=>x.id==k);if(!p)return'';
+      return`<div class="citem"><div class="citem-icon">${p.icon}</div>
+        <div class="citem-info"><div class="citem-name">${p.name}</div><div class="citem-price">₹${p.price} × ${state.cart[k]} = ₹${p.price*state.cart[k]}</div></div>
+        <div class="qty-row"><button class="qbtn" onclick="chQty(${p.id},-1)">−</button><span class="qnum">${state.cart[k]}</span><button class="qbtn" onclick="chQty(${p.id},1)">+</button></div></div>`;
+    }).join('')}</div>
+    <div class="section-label" style="margin-bottom:8px">ORDER TYPE</div>
+    <div class="toggle-row">
+      <button class="toggle-btn ${state.orderType==='delivery'?'on':''}" onclick="state.orderType='delivery';renderCart()">🛵 Home delivery (+₹40)</button>
+      <button class="toggle-btn ${state.orderType==='pickup'?'on':''}" onclick="state.orderType='pickup';renderCart()">🏪 Pickup (free)</button>
+    </div>
+    <div class="cart-summary">
+      <div class="sum-row"><span>Subtotal</span><span>₹${sub}</span></div>
+      <div class="sum-row"><span>${state.orderType==='delivery'?'Delivery':'Pickup'}</span><span>${del?'₹'+del:'Free'}</span></div>
+      <div class="sum-row total"><span>Total</span><span>₹${total}</span></div>
+    </div>
+    ${!state.user?`<div style="background:var(--a50);border:0.5px solid var(--a100);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--a800);margin-bottom:14px">Sign in to track your orders. <span style="color:var(--g600);cursor:pointer;font-weight:500" onclick="go('auth')">Sign in →</span></div>`:''}
+    ${state.orderType==='delivery'?`<div class="field"><label>Delivery address</label><input id="f-addr" placeholder="Enter full address"/></div>`:''}
+    <div class="field"><label>Phone number</label><input id="f-phone" placeholder="+91 9XXXXXXXXX" ${state.user?.phone?`value="${state.user.phone}"`:''}/></div>
+    <div class="field"><label>Notes (optional)</label><input id="f-notes" placeholder="Any special instructions?"/></div>
+    <button class="btn-primary" onclick="placeOrder(${total})">Place order — ₹${total}</button>
+  </div>`;
+}
+function chQty(id,d){state.cart[id]=Math.max(0,(state.cart[id]||0)+d);if(!state.cart[id])delete state.cart[id];renderNav();renderCart();}
+function placeOrder(total){
+  const keys=Object.keys(state.cart).filter(k=>state.cart[k]>0);
+  const items=keys.map(k=>{const p=products.find(x=>x.id==k);return p?{id:p.id,name:p.name,icon:p.icon,qty:state.cart[k],price:p.price}:null;}).filter(Boolean);
+  const addr=document.getElementById('f-addr');
+  if(state.orderType==='delivery'&&addr&&!addr.value.trim()){addr.style.borderColor='var(--r600)';return;}
+  const order={id:'#'+orderCounter++,userId:state.user?state.user.email:'guest',customerName:state.user?state.user.name:'Guest',items,type:state.orderType,address:addr?addr.value:'',phone:document.getElementById('f-phone')?.value||'',notes:document.getElementById('f-notes')?.value||'',total,status:'new',date:new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}),time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})};
+  items.forEach(it=>{const p=products.find(x=>x.id===it.id);if(p)p.stock=Math.max(0,p.stock-it.qty);});
+  saveProducts(products);orders.unshift(order);saveOrders(orders);state.cart={};state.checkoutSuccess=true;renderNav();renderCart();
+}
+
+function renderAuth(err=''){
+  const isL=state.authMode==='login';
+  document.getElementById('page-auth').innerHTML=`<div class="auth-page">
+    <div class="auth-title">${isL?'Welcome back':'Create account'}</div>
+    <div class="auth-sub">${isL?'Sign in to track your orders':'Join GreenSprout for order history'}</div>
+    ${err?`<div class="auth-error">${err}</div>`:''}
+    ${!isL?`<div class="field"><label>Full name</label><input id="a-name" placeholder="Your name"/></div>`:''}
+    <div class="field"><label>Email</label><input id="a-email" type="email" placeholder="you@email.com"/></div>
+    <div class="field"><label>Password</label><input id="a-pass" type="password" placeholder="Password"/></div>
+    ${!isL?`<div class="field"><label>Phone (optional)</label><input id="a-phone" placeholder="+91 9XXXXXXXXX"/></div>`:''}
+    <button class="btn-primary" onclick="${isL?'doLogin()':'doRegister()'}"> ${isL?'Sign in':'Create account'}</button>
+    ${isL?`<div style="margin-top:10px"><button class="btn-sec" onclick="adminLogin()">Admin login</button></div>`:''}
+    <div class="auth-switch">${isL?'New here?':'Already have an account?'} <span onclick="state.authMode='${isL?'register':'login'}';renderAuth()">${isL?'Create account':'Sign in'}</span></div>
+  </div>`;
+}
+function doLogin(){
+  const email=document.getElementById('a-email').value.trim(),pass=document.getElementById('a-pass').value;
+  if(!email||!pass){renderAuth('Please fill all fields');return;}
+  const u=users[email];if(!u||u.password!==pass){renderAuth('Invalid email or password');return;}
+  state.user={...u,email};go('orders');
+}
+function doRegister(){
+  const name=document.getElementById('a-name').value.trim(),email=document.getElementById('a-email').value.trim(),pass=document.getElementById('a-pass').value,phone=document.getElementById('a-phone')?.value||'';
+  if(!name||!email||!pass){renderAuth('Please fill all required fields');return;}
+  if(users[email]){renderAuth('Account already exists. Sign in instead.');return;}
+  users[email]={name,password:pass,phone,isAdmin:false};saveUsers(users);state.user={name,email,phone,isAdmin:false};go('orders');
+}
+function adminLogin(){
+  const pass=document.getElementById('a-pass').value;
+  if(pass===ADMIN_PASS){state.user={name:'Admin',email:'admin',isAdmin:true};go('admin');}
+  else renderAuth('Wrong admin password. Hint: admin123');
+}
+
+function renderOrders(){
+  const el=document.getElementById('page-orders');
+  if(!state.user){el.innerHTML=`<div class="cart-page"><div class="cart-empty"><div style="font-size:36px;margin-bottom:12px">🔒</div><div style="font-size:15px;font-weight:500;margin-bottom:6px">Sign in to see your orders</div><button class="btn-primary" style="max-width:180px;margin:16px auto 0;display:block" onclick="go('auth')">Sign in</button></div></div>`;return;}
+  const myO=state.user.isAdmin?orders:orders.filter(o=>o.userId===state.user.email);
+  const ini=state.user.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  el.innerHTML=`<div class="orders-page">
+    <div class="profile-card">
+      <div class="profile-head"><div class="profile-avatar">${ini}</div>
+        <div><div style="font-size:16px;font-weight:500">${state.user.name}</div><div style="font-size:12px;color:var(--text2)">${state.user.email}</div></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <div class="mcard"><div class="mcard-l">Total orders</div><div class="mcard-v">${myO.length}</div></div>
+        <div class="mcard"><div class="mcard-l">Total spent</div><div class="mcard-v">₹${myO.reduce((s,o)=>s+o.total,0)}</div></div>
+        <div class="mcard"><div class="mcard-l">Completed</div><div class="mcard-v">${myO.filter(o=>o.status==='done').length}</div></div>
+      </div></div>
+    <div class="section-label" style="margin-bottom:12px">ORDER HISTORY</div>
+    ${!myO.length?`<div style="text-align:center;padding:40px;color:var(--text2);font-size:14px">No orders yet. <span style="color:var(--g600);cursor:pointer" onclick="go('shop')">Shop now →</span></div>`:
+    myO.map(o=>{const sc={new:'s-new',ready:'s-ready',done:'s-done',cancelled:'s-cancelled'}[o.status]||'s-new',sl={new:'New',ready:'Ready',done:'Done',cancelled:'Cancelled'}[o.status]||'New';
+      return`<div class="ocard"><div class="ocard-head"><span class="ocard-id">${o.id}</span><span class="ocard-date">${o.date} ${o.time}</span></div>
+        <div class="ocard-items">${o.items.map(i=>`${i.icon} ${i.name} ×${i.qty}`).join(' · ')}</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:8px">${o.type==='delivery'?'🛵 Delivery':'🏪 Pickup'}${o.address?' · '+o.address:''}</div>
+        <div class="ocard-foot"><span class="ocard-total">₹${o.total}</span><span class="status-badge ${sc}">${sl}</span></div></div>`;
+    }).join('')}</div>`;
+}
+
+function renderAdmin(){
+  if(!state.user?.isAdmin){document.getElementById('page-admin').innerHTML=`<div style="padding:60px;text-align:center;color:var(--text2)">Admin access only.</div>`;return;}
+  const el=document.getElementById('page-admin');
+  const revenue=orders.reduce((s,o)=>s+o.total,0),pending=orders.filter(o=>o.status!=='done'&&o.status!=='cancelled').length;
+  el.innerHTML=`<div class="admin-page">
+    <div class="metrics">
+      <div class="mcard"><div class="mcard-l">Total orders</div><div class="mcard-v">${orders.length}</div></div>
+      <div class="mcard"><div class="mcard-l">Revenue</div><div class="mcard-v">₹${revenue}</div><div class="mcard-s">All time</div></div>
+      <div class="mcard"><div class="mcard-l">Pending</div><div class="mcard-v">${pending}</div></div>
+      <div class="mcard"><div class="mcard-l">Products</div><div class="mcard-v">${products.length}</div></div>
+    </div>
+    <div class="admin-tabs">
+      <button class="atab ${state.adminTab==='orders'?'active':''}" onclick="state.adminTab='orders';renderAdmin()">Orders</button>
+      <button class="atab ${state.adminTab==='inventory'?'active':''}" onclick="state.adminTab='inventory';renderAdmin()">Inventory</button>
+      <button class="atab ${state.adminTab==='customers'?'active':''}" onclick="state.adminTab='customers';renderAdmin()">Customers</button>
+    </div>
+    ${state.adminTab==='orders'?adminOrders():state.adminTab==='inventory'?adminInventory():adminCustomers()}
+  </div>`;
+}
+function adminOrders(){
+  if(!orders.length)return`<div style="text-align:center;padding:40px;color:var(--text2);font-size:14px">No orders yet.</div>`;
+  return`<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Type</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>${orders.map((o,i)=>{const sc={new:'s-new',ready:'s-ready',done:'s-done',cancelled:'s-cancelled'}[o.status],sl={new:'New',ready:'Ready',done:'Done',cancelled:'Cancelled'}[o.status],next={new:'ready',ready:'done'}[o.status];
+      return`<tr><td><strong>${o.id}</strong><br><span style="font-size:11px;color:var(--text2)">${o.date}</span></td>
+        <td>${o.customerName}<br><span style="font-size:11px;color:var(--text2)">${o.phone||''}</span></td>
+        <td style="max-width:130px;font-size:12px">${o.items.map(it=>`${it.icon}${it.name}×${it.qty}`).join(', ')}</td>
+        <td style="font-size:12px">${o.type==='delivery'?'🛵':'🏪'} ${o.type}</td>
+        <td style="font-weight:500">₹${o.total}</td>
+        <td><span class="status-badge ${sc}">${sl}</span></td>
+        <td>${next?`<button class="abtn" onclick="advOrder(${i},'${next}')">→ ${next[0].toUpperCase()+next.slice(1)}</button>`:''}
+        ${o.status!=='cancelled'&&o.status!=='done'?`<button class="abtn danger" onclick="advOrder(${i},'cancelled')">Cancel</button>`:''}</td></tr>`;
+    }).join('')}</tbody></table></div>`;
+}
+function adminInventory(){
+  const icons=['🌱','🌿','🌻','🥦','🍀','🌾','🌺','🫛','🌼','🍃'];
+  return`<div class="inv-form"><div class="inv-form-title">Add new product</div>
+    <div class="form-grid">
+      <div class="field"><label>Name</label><input id="np-name" placeholder="e.g. Kale" value="${state.newProduct.name}"/></div>
+      <div class="field"><label>Icon</label><select id="np-icon">${icons.map(i=>`<option ${state.newProduct.icon===i?'selected':''}>${i}</option>`).join('')}</select></div>
+      <div class="field"><label>Price (₹)</label><input id="np-price" type="number" placeholder="100" value="${state.newProduct.price}"/></div>
+      <div class="field"><label>Unit</label><input id="np-unit" placeholder="per 100g" value="${state.newProduct.unit}"/></div>
+      <div class="field"><label>Stock</label><input id="np-stock" type="number" placeholder="50" value="${state.newProduct.stock}"/></div>
+      <div class="field"><label>Badge</label><select id="np-badge">${['organic','popular','new'].map(b=>`<option ${state.newProduct.badge===b?'selected':''}>${b}</option>`).join('')}</select></div>
+    </div>
+    <div class="field"><label>Description</label><input id="np-desc" placeholder="Short description" value="${state.newProduct.desc}"/></div>
+    <button class="btn-primary" style="margin-top:4px" onclick="addProduct()">Add product</button></div>
+  <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Product</th><th>Price</th><th>Unit</th><th>Badge</th><th>Stock</th><th>Actions</th></tr></thead>
+    <tbody>${products.map((p,i)=>`<tr>
+      <td>${p.icon} <strong>${p.name}</strong></td>
+      <td><input class="editable" type="number" value="${p.price}" onchange="editProduct(${i},'price',+this.value)"/></td>
+      <td><input class="editable" style="width:90px" value="${p.unit}" onchange="editProduct(${i},'unit',this.value)"/></td>
+      <td><select class="editable" style="width:85px" onchange="editProduct(${i},'badge',this.value)">${['organic','popular','new'].map(b=>`<option ${p.badge===b?'selected':''}>${b}</option>`).join('')}</select></td>
+      <td><input class="editable" type="number" value="${p.stock}" onchange="editProduct(${i},'stock',+this.value)"/></td>
+      <td><button class="abtn danger" onclick="deleteProduct(${i})">Delete</button></td>
+    </tr>`).join('')}</tbody></table></div>`;
+}
+function adminCustomers(){
+  const cList=Object.entries(users).map(([email,u])=>({email,...u}));
+  if(!cList.length)return`<div style="text-align:center;padding:40px;color:var(--text2);font-size:14px">No registered customers yet.</div>`;
+  return`<table class="tbl"><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Orders</th><th>Spent</th></tr></thead>
+    <tbody>${cList.map(u=>{const uO=orders.filter(o=>o.userId===u.email),spent=uO.reduce((s,o)=>s+o.total,0);
+      return`<tr><td><strong>${u.name}</strong></td><td style="font-size:12px;color:var(--text2)">${u.email}</td><td style="font-size:12px">${u.phone||'—'}</td><td>${uO.length}</td><td style="font-weight:500">₹${spent}</td></tr>`;
+    }).join('')}</tbody></table>`;
+}
+function advOrder(i,s){orders[i].status=s;saveOrders(orders);renderAdmin();}
+function addProduct(){
+  const name=document.getElementById('np-name').value.trim(),price=+document.getElementById('np-price').value,stock=+document.getElementById('np-stock').value,desc=document.getElementById('np-desc').value.trim();
+  if(!name||!price||!desc){alert('Please fill Name, Price, and Description');return;}
+  products.push({id:Date.now(),name,icon:document.getElementById('np-icon').value,desc,price,unit:document.getElementById('np-unit').value||'per 100g',badge:document.getElementById('np-badge').value,stock});
+  saveProducts(products);state.newProduct={name:'',icon:'🌿',desc:'',price:'',unit:'per 100g',badge:'organic',stock:''};renderAdmin();
+}
+function editProduct(i,f,v){products[i][f]=v;saveProducts(products);}
+function deleteProduct(i){if(confirm(`Delete ${products[i].name}?`)){products.splice(i,1);saveProducts(products);renderAdmin();}}
+
+renderNav();renderShop();
+</script>
+</body>
+</html>
